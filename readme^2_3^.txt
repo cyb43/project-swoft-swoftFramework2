@@ -91,7 +91,7 @@ services:
     privileged: true
     ## sowft 镜像的 entrypoint 命令（运行初始化命令）是 ENTRYPOINT ["php", "/var/www/swoft/bin/swoft", "start"]，即 swoft 服务会随着容器而启动(默认)。
     ## 改为启动到 bash 模式
-    entrypoint: ["sh"]
+    #entrypoint: ["sh"] #不知道为什么打开后启动不了docker容器？
 
   mysql:
     image: mysql
