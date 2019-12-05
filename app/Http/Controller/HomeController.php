@@ -31,6 +31,8 @@ class HomeController
      */
     public function index(): Response
     {
+        var_dump('^2_3^');
+
         /** @var Renderer $renderer */
         $renderer = Swoft::getBean('view');
         $content  = $renderer->render('home/index');

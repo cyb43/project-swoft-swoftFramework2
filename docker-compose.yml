@@ -2,8 +2,9 @@ version: '3.4'
 services:
   swoft:
     image: swoft/swoft
-#    for local develop
-#    command: php -S 127.0.0.1:13300
+    ## for local develop(本地开发设置)
+    ## commad命令覆盖默认的启动server命令。启动后，进入容器再手动启动server php bin/swoft http:start。
+    command: php -S 127.0.0.1:13300
     container_name: swoft-srv
     environment:
       - APP_ENV=dev
@@ -12,22 +13,32 @@ services:
     depends_on:
       - mysql
       - redis
+    ## 宿主端口:容器端口
     ports:
-      - "18306:18306"
-      - "18307:18307"
-      - "18308:18308"
+      - "18406:18306"
+      - "18407:18307"
+      - "18408:18308"
     volumes:
+      ## 当前项目目录挂载容器"/var/www/swoft"目录
       - ./:/var/www/swoft
       # - ./runtime/ng-conf:/etc/nginx
       # - ./runtime/logs:/var/log
+    stdin_open: true
+    tty: true
+    privileged: true
+    ## sowft 镜像的 entrypoint 命令（运行初始化命令）是 ENTRYPOINT ["php", "/var/www/swoft/bin/swoft", "start"]，即 swoft 服务会随着容器而启动(默认)。
+    ## 改为启动到 bash 模式
+    entrypoint: ["sh"]
 
   mysql:
     image: mysql
     container_name: mysql-srv
     environment:
       - MYSQL_ROOT_PASSWORD=123456
+    ## 宿主端口映射到容器3306端口
     ports:
-      - "13306:3306"
+      - "13406:3306"
+    ## 项目目录"./runtime/data/mysql"挂载到容器目录“/var/lib/mysql”，可通过"docker exec -i mysql-srv ls var/lib/mysql"查看
     volumes:
       - ./runtime/data/mysql:/var/lib/mysql
     restart: always
@@ -35,8 +46,9 @@ services:
   redis:
     container_name: redis-srv
     image: redis:4-alpine
+    ## 宿主端口映射到容器端口
     ports:
-      - "16379:6379"
+      - "16479:6379"
     sysctls:
       net.core.somaxconn: 65535
     restart: always
