@@ -20,20 +20,20 @@ use Throwable;
 use function context;
 
 /**
+ * ^2_3^默认前台
  * Class HomeController
  * @Controller()
  */
 class HomeController
 {
     /**
+     * 根路由"/"
      * @RequestMapping("/")
      * @throws Throwable
      */
     public function index(): Response
     {
-        var_dump('^2_3^');
-
-        /** @var Renderer $renderer */
+        /** @var Renderer $renderer 视图渲染 */
         $renderer = Swoft::getBean('view');
         $content  = $renderer->render('home/index');
 

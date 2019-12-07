@@ -9,7 +9,7 @@ services:
     environment:
       - APP_ENV=dev
       - TIMEZONE=Asia/Shanghai
-    restart: always
+    #restart: always
     depends_on:
       - mysql
       - redis
