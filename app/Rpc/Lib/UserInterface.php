@@ -11,6 +11,7 @@
 namespace App\Rpc\Lib;
 
 /**
+ * ^2_3^User接口
  * Class UserInterface
  *
  * @since 2.0

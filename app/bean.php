@@ -111,6 +111,35 @@ return [
             'prefix' => 'swoft:'
         ]
     ],
+
+    //// amqp rabbitmq
+//    'amqp'        => [
+//        'auths'    => [
+//            [
+//                'host'     => env('AMQP_HOST', 'localhost'),
+//                'port'     => env('AMQP_PORT', '5672'),
+//                'user'     => env('AMQP_USER', 'admin'),
+//                'password' => env('AMQP_PASSWORD', 'admin'),
+//                'vhost'    => '/',
+//            ],
+//        ],
+//
+//        'settings' => [
+//            //// 默认
+//            'default' => [
+//                'exchange' => ['name' => 'exchange_amqp', 'type' => \PhpAmqpLib\Exchange\AMQPExchangeType::TOPIC],
+//                'queue'    => ['name' => 'queue_amqp'],
+//                'route'    => ['key' => ''],
+//            ],
+//            'stats_social' => [
+//                'exchange' => ['name' => 'exchange_amqp_stats_social', 'type' => \PhpAmqpLib\Exchange\AMQPExchangeType::TOPIC],
+//                'queue'    => ['name' => 'queue_amqp_stats_social'],
+//                'route'    => ['key' => ''],
+//            ]
+//        ]
+//    ],
+
+    //// RPC Client 配置
     'user'              => [
         'class'   => ServiceClient::class,
         'host'    => '127.0.0.1',
@@ -127,6 +156,7 @@ return [
         'class'  => ServicePool::class,
         'client' => bean('user'),
     ],
+
     'rpcServer'         => [
         'class' => ServiceServer::class,
     ],

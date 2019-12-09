@@ -16,7 +16,7 @@ use Swoft\Co;
 use Swoft\Rpc\Server\Annotation\Mapping\Service;
 
 /**
- * Class UserService
+ * ^2_3^Class UserService
  *
  * @since 2.0
  *
@@ -47,20 +47,21 @@ class UserService implements UserInterface
     }
 
     /**
-     * @return void
-     */
-    public function returnNull(): void
-    {
-        return;
-    }
-
-    /**
+     * 读取文件
      * @return string
      */
     public function getBigContent(): string
     {
         $content = Co::readFile(__DIR__ . '/big.data');
         return $content;
+    }
+
+    /**
+     * @return void
+     */
+    public function returnNull(): void
+    {
+        return;
     }
 
     /**
