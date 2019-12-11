@@ -38,6 +38,35 @@ class AmqpConsumerController
         $params = $request->input();
         $params['controller'] = 'controller';
 
-        return $this->amqpConsumerService->test( $params );
+        return $this->amqpConsumerService->test($params);
     }
+
+    /**
+     * php-amqplib 生产者(发布者)
+     * @RequestMapping(route="publisher", method={RequestMethod::POST})
+     * @param Request $request
+     * @return array
+     */
+    public function publisher(Request $request): array
+    {
+        $params = $request->input();
+        $result = $this->amqpConsumerService->publisher( $params);
+        return $result;
+    }
+
+    /**
+     * php-amqplib 消费者
+     *
+     * @RequestMapping(route="consumer", method={RequestMethod::POST})
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function consumer(Request $request): array
+    {
+        $params = $request->input();
+        $result = $this->amqpConsumerService->consumer( $params );
+        return $result;
+    }
+
 }

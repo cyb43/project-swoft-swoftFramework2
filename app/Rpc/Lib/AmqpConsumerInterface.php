@@ -16,4 +16,18 @@ interface AmqpConsumerInterface
      * @return array
      */
     public function test(array $params): array;
+
+    /**
+     * php-amqplib 生产者(发布者)
+     * @param array $params
+     * @return array
+     */
+    public function publisher(array $params): array;
+
+    /**
+     * php-amqplib 消费者
+     * @param array $params
+     * @return array
+     */
+    public function consumer(array $params): array;
 }
