@@ -114,6 +114,7 @@ return [
 
     //// amqp rabbitmq
 //    'amqp'        => [
+//        'class'    => Swoft\Amqp\Client::class,
 //        'auths'    => [
 //            [
 //                'host'     => env('AMQP_HOST', 'localhost'),
@@ -127,16 +128,21 @@ return [
 //        'settings' => [
 //            //// 默认
 //            'default' => [
-//                'exchange' => ['name' => 'exchange_amqp', 'type' => \PhpAmqpLib\Exchange\AMQPExchangeType::TOPIC],
-//                'queue'    => ['name' => 'queue_amqp'],
+//                'exchange' => ['name' => 'exchange_swoft_amqp', 'type' => \PhpAmqpLib\Exchange\AMQPExchangeType::TOPIC],
+//                'queue'    => ['name' => 'queue_swoft_amqp'],
 //                'route'    => ['key' => ''],
 //            ],
 //            'stats_social' => [
-//                'exchange' => ['name' => 'exchange_amqp_stats_social', 'type' => \PhpAmqpLib\Exchange\AMQPExchangeType::TOPIC],
-//                'queue'    => ['name' => 'queue_amqp_stats_social'],
+//                'exchange' => ['name' => 'exchange_swoft_amqp_stats_social', 'type' => \PhpAmqpLib\Exchange\AMQPExchangeType::TOPIC],
+//                'queue'    => ['name' => 'queue_swoft_amqp_stats_social'],
 //                'route'    => ['key' => ''],
 //            ]
 //        ]
+//    ],
+//
+//    'amqp.pool'   => [
+//        'class'  => Swoft\Amqp\Pool::class,
+//        'client' => bean('amqp'),
 //    ],
 
     //// RPC Client 配置
