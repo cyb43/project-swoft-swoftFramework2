@@ -12,6 +12,425 @@ https://www.swoft.org/documents/v2/
 1、SWOFT简述
 Swoft 是一款基于 Swoole 扩展实现的 PHP 微服务协程框架。Swoft 能像 Go 一样，内置协程网络服务器及常用的协程客户端且常驻内存，不依赖传统的 PHP-FPM。有类似 Go 语言的协程操作方式，有类似 Spring Cloud 框架灵活的注解、强大的全局依赖注入容器、完善的服务治理、灵活强大的 AOP、标准的 PSR 规范实现等等。
 --
+2、SWOFT特性
+Swoft 通过长达三年的积累和方向的探索，把 Swoft 打造成 PHP 界的 Spring Cloud, 它是 PHP 高性能框架和微服务治理的最佳选择。
+内置高性能网络服务器（Http/Websocket/RPC/TCP）；
+灵活的组件功能；
+强大的注解功能；
+多样化的命令终端（控制台）；
+强大的面向切面编程（AOP）；
+容器管理，依赖注入（DI）；
+灵活的事件机制；
+基于PSR-7的HTTP消息的实现；
+基于PSR-14的事件管理；
+基于PSR-15的中间件；
+国际化（i18n）支持；
+简单有效的参数验证器；
+高性能连接池（Mysql/Redis/RPC），自动重新连接；
+数据库高度兼容Laravel的使用方式；
+Redis高度兼容Laravel的使用方式；
+秒级定时任务；
+Session 管理；
+进程池；
+秒级定时任务；
+Session 管理；
+进程池；
+服务注册与发现；
+配置中心；
+服务限流；
+服务降级；
+服务熔断；
+Apollo；
+Consul；
+--
+3、关于 Swoft
+Swoft 是基于 Swoole 的企业级 PHP 应用程序开发框架，大量开发人员使用 Swoft Framework 来创建高性能、易于测试和可重用的代码。
+Swoft 开源框架自 2018 年 3 月 6 日发布以来，我们秉承简单、高效、稳定的宗旨持续迭代升级。伴随着 1.x 的开发迭代和 Swoole 4 全协程化，1.x 的底层架构已经不再合适，所以在 2018 年 11 月开始规划 2.x。新版本底层借鉴 1.x 的经验全部重写，采用 Swoole Hook 全协程化，整体相比 1.x 更易上手，稳定性也更高。
+Swoft 是一款轻量级的框架，所有组件均可以自定义且支持按需加载使用。
+Swoft 框架可用于开发任何 Web 应用程序，构建高性能的 Web 系统、API、中间件、基础服务等。
+--
+4、优势
+//// Swoft Framework 的优点
+以组件化方式开发，开发者可以自定义组件并按需加载使用；
+良好 Web MVC 设计，它为 Web 开发框架提供了一个很好的选择；
+PHP 开发者可快速上手，数据库、缓存的使用均高度兼容 Laravel；
+所有组件严格通过单元测试及压力测试；
+--
+5、社区
+Swoft 官方 QQ 群 1：548173319（点击添加）
+Swoft 官方 QQ 群 2：778656850（点击添加）
+Swoft 社区：https://learnku.com/swoft
+--
+6、支持
+您的支持是对开发组的最大鼓励，您可以通过以下方式来支持我们。
+赞助 https://www.swoft.org/donation/
+参与贡献 https://www.swoft.org/documents/v2/contribute/sub-questions/
+--
+--
+第二卷 开发指南
+--
+--
+一、版本更新
+http://swoft.org/documents/v2/dev-guide/update/
+--
+1、v2.0.8[WIP]
+(1)、修复(Fixed)
+修复 ws server 的 message response.finish 兼容 swoole 4.4.12 问题 d724a949；
+修复 console 组件中拥有短选项的选项获取值不同步问题 ac41eca；
+修复 部分字符串操作不兼容 php 7.4 的问题 b4d0e90；
+修复 输入未知命令时，显示http server 命令帮助信息有误 684807e；
+修复 去除 process 组件中无效的调试语句 2bc84aa；
+打包为phar后不能正确的加载同目录下的 .env 文件问题 8046c15；
+(2)、更新(Update)
+调整 路由没找到时抛出的异常将会携带错误 code 7e06afa；
+(3)、增强(Enhancement)
+优化 phar 包构建速度，现在打包时间将会大幅度缩短 1055fff；
+优化 console 命令参数和选项的解析绑定，设置的类型的将会格式化为对应的类型 7dc0d58；
+--
+2、v2.0.7(2019-11-18)
+升级提示：Swoole\WebSocket\Server::push 第四个参数 4.4.12 后改为了 int 类型。
+(1)、修复(Fixed)
+修复 config 注入时，没有找到值也会使用对应类型的默认值覆盖属性，导致属性默认值被覆盖 d84d50a7；
+修复 ws server 中使用message调度时，没有过滤空数据，导致多发出一个响应。避免方法swoft-cloud/swoft#1002 d84d50a7；
+修复 tcp server 中使用message调度时，没有过滤空数据，导致多发出一个响应。07a01ba1；
+修复 独立使用console组件时缺少 swoft/stdlib 库依赖 c569c81a；
+修复 ArrayHelper::get 传入key为 integer 时，报参数错误 a44dcad；
+修复 console 渲染使用table，有int值时，计算宽度报类型错误 74a835ab；
+修复 error 组件中用户无法自定义设置默认的错误处理级别 4c78aeb；
+修复 启用和禁用 组件设置 isEnable() 不生效的问题 da8c51e56；
+修复 在 cygwin 环境使用 uniqid() 方法必须将第二个参数设置为 true c7f688f；
+修复 在 cygwin 环境不能够设置进程title而导致报错 c466f6a；
+修复 使用 http response->delCookie() 无法删除浏览器的cookie数据问题 8eb9241；
+修复 ws server消息调度时，接收到的ext数据不一定是数组导致报错 ff45b35；
+修复 日志文件按时间拆分问题c195413；
+修复 日志 JSON 格式小问题a3fc6b9；
+修复 rpc 服务提供者 getList 调用两次问题fd03e71；
+修复 redis cluster 不支持 auth 参数7a678f；
+修复 模型查询 json 类型, 不支持 array 6023a9；
+修复 redis multi 操作没有及时是否连接 e5f698；
+修复 redis 不支持 expireAt, geoRadius 749241；
+修复 crontab 时间戳检测偏差问题 eb08a46；
+(2)、更新(Update)
+更新 console 在渲染 help信息之前也会发出事件 ConsoleEvent::SHOW_HELP_BEFORE d3f7bc3；
+简化和统一 http, ws, tcp, rpc server管理命令逻辑 f202c826；
+更新 ws 和 tcp Connection类添加 newFromArray 和 toArray 方法，方便通过第三方存储(redis)时导出信息和恢复连接 a8b0b7c；
+优化 server 添加统一的 swoole pipe message 事件处理，在 ws, tcp 中使用swoft事件来处理进程间消息 1c51a8c；
+(3)、增强(Enhancement)
+现在 tcp 请求支持添加全局或对应的方法中间件，流程和使用跟http中间件类似。仅当使用系统调度时有用 6b593877；
+现在 websocket message 请求支持添加全局或对应的方法中间件，流程和使用跟http中间件类似。仅当使用系统调度时有用 9739815；
+事件管理允许设置 destroyAfterFire 在每次事件调度后清理事件中携带的数据 50bf43d3；
+数据库错误异常新增 code 返回fd306f4；
+协程文件操作 writeFile 新增写失败异常08c4244；
+RPC 新增参数验证8646fc5；
+--
+3、v2.0.6(2019-09-21)
+(1)、升级提示
+通过参数注入接收websocket原始数据时，现在需要加上类型 string。例如： public function echo(string $data)；
+ws server 中使用message调度时，没有过滤空数据，导致多发出一个响应。避免方法swoft-cloud/swoft#1002；
+(2)、修复(Fixed)
+修复 ws server收到消息时，默认使用当前fd作为响应消息的客户端 3a8890cf；
+修复 ws server通过swoole server拿到的全部连接里，fd的类型可能不是整型导致报错。0fa79d7；
+修复 stdlib SystemHelper 在 windows 10 中会被 Defender 删除 71c2893；
+修复 increment/decrement 多拿了一个连接 94c7171；
+修复 模型属性 $modelTimestamps 关闭了无效 94c7171；
+修复 在初始化前调用了log，导致可能会在启动阶段报context丢失错误 5a27704f；
+修复 ws server的握手和open使用同一个顶级协程ID，如果有一个先执行完成，可能会导致后面的出现session丢失 c2cd17a；
+修复 after 定时器传递参数 bug 8ed609a；
+修复定时任务内存泄漏和日志打印数据丢失问题 aa6bc32；
+优化 Http server sgo 处理流程 e60d92e；
+修复数据库在事物情况下重连导致数据不一致问题 c2e87f2；
+修复 Aop 极端情况返回 0 问题 85bc1b1；
+修复 BeanFactory::createBean() 方法创建问题c2e2c89；
+修复 RPC 错误数据是字符串问题 3a34658；
+修复 redisCluster 初始化问题3a60c06；
+修复 DbException 没有抛出 Database 的异常 Code3a60c06；
+修复 ModelAttribute 的 getter 和 setter 驼峰判断错误2e2f0f1；
+修复 Aggregate 聚合, 返回字符串强行转换 int错误7aa98a6；
+修复模型 updateCounters 方法更新之后没有同步实体数据967d6f8；
+(3)、更新(Update)
+调整 ws server在worker 退出时自动关闭连接，添加开关配置，可以选择是否开启。3a8890c；
+ws server 新增事件： MESSAGE_PUSH` OPEN_BEFORE MESSAGE_RECEIVE` e1b0583；
+(4)、增强(Enhancement)
+新增日志按时间切割 f649df2；
+新增日志支持传递额外参数 55d5533；
+调整和新增了一些ws server相关事件，方便用户使用 e1b0583；
+模型对 Prop 支持 630aad8；
+新增连接连接池(mysql/redis/rpc)启动初始化连接功能 a367173；
+tcp server 使用长度分包时，支持自定义头部数据打包、解包格式 a6fbe932；
+RPC 调用错误信息调整 d9226b1；
+新增操作 Database 异常, 打印控制台 错误 SQL3a60c06；
+新增操作数据迁移 int 系列 长度支持967d6f8；
+新增获取原始 sql 方法getRawSql967d6f8；
+扩展updateOrInsert和updateOrCreate 支持自增参数967d6f8；
+(5)、扩展(Extra)
+swoftcli 支持类生成，创建新的应用、组件结构。使用请查看文档；
+swoftTracker 支持方便开发者调试；
+--
+4、v2.0.5-beta(2019-08-06)
+(1)、升级提示
+请使用 context() 代替 Context::mustGet()；
+这个版本开始验证器默认关闭，需要开发者开启 validator setting；
+(2)、修复(Fixed)
+修复提前中断请求逻辑可能导致无法正确的格式化对应的Content-Type f031398；
+修复使用sgo创建子协程，在结束时没有清理与顶级协程的映射关系 de11ae5b；
+修复 Xml 格式解析方法 24d0038；
+修复类代理 Unique 字符串问题 444ddeb；
+修复 context()->get() 存在问题以及废弃 Context::mustGet() 方法 6acc1b5；
+修复接口注入，类名访问错误 2d9a31f；
+修复 模型使用 paginate 方法, 结果集没有映射字段3027287；
+修复 websocket server 里，当有多个worker，主动关闭非当前worker连接时报错 7666969；
+(3)、更新(Update)
+默认的 worker num 设置通过 swoole_cpu_num 函数获取 553f6500；
+验证器调整成，默认非必须，用户自己开启 e5b258d；
+不再抛出swoft内部的 ContainerException 到用户使用层 1e74893；
+console output 新增 confirm` select` 等交互方法 0181138a；
+(4)、增强(Enhancement)
+console 命令选项设置 CommandOption，现在允许选项描述为多行信息 e5914983；
+websocket server 的全部消息发送方法，支持传入 opcode 参数 dc164ffe9；
+websocket 模块允许设置当前模块的默认 opcode，用于自动处理返回数据设置 opcode 9e3e9672；
+增强 websocket 相关类，现在消息处理方法允许注入更多数据对象类型 Request` Response` 3d6c60b4；
+当worker退出时，websocket server 会自动关闭所有连接 5ea10ecc；
+Add Timer 定时器封装 eb92ee6；
+Add Coroutine 方法封装 d8c2b88；
+(5)、扩展(Extra)
+swoft/crontab 秒级别定时任务；
+swoft/whoops 对 filp/whoops 在swoft中使用的简单封装，用于渲染并显示更加利于阅读的错误信息；
+--
+5、v2.0.4-beta(2019-07-21)
+(1)、升级注意
+请去掉 bin/swoft 里的 Runtime::enanbleCoroutine() 设置；
+请确保 swoole 的 swoole.use_shortname 的值为 On；
+从这个版本开始要求 swoole 4.4.1+；
+(2)、增强(Enhancement)
+Swoft\Http\Message\Request 新增 getHeaderLines() (74a2a91)；
+Aop 新增 getArgsMap() 和 getClassName() 方法 (c47e785)；
+新增 srun() 函数，用于协程调度 (3c4a6a4)；
+优化 server 事件(onStart / onWorkStart / onWorkStop / onShutdown)，事件自带支持协程 (a8d5a8d)；
+新增投递同步阻塞任务(ec938e5)；
+新增 Redis call 方法, 用于使用同一连接操作(92456987)；
+兼容 Swoole 4.4.x；
+(3)、修复(Fixed)
+修复 迁移类名太长导致记录类名不全(58314b8)；
+修复 实体查询之后使用Setter更新字段值之后update更新无效(caadf0e)；
+修复 stop 后删除pid文件的结果返回错误，导致restart失败 (2be450bf11)；
+修复 i18n 设置默认语言不生效的问题 (b401a504e)；
+修复 ws server在有多个worker时，无法主动关闭其他worker的连接(271b6398)；
+修复 http server接收xml请求时，content type 不能正确匹配(2ff9a4e61)；
+修复 使用 Database, json 操作无效(92456987)；
+修复 limiter 限速器 Redis 加前缀无法使用问题(7b54d4c)；
+(4)、更新(Update)
+更新 ws server 可以通过配置 disabledModules 来禁用 ws 模块(fa31111d)；
+(5)、扩展(Extra)
+在官网增加案例展示，欢迎大家提交案例到官方案例仓库 swoft-cloud/swoft-case；
+在GitHub上对文档的修改，将会自动更新到官网文档，不再需要手动刷新；
+(6)、新增(New)
+进程管理(c61b8f7)；
+自定义用户进程(c328d54)；
+进程池(d2e6290)；
+TCP server 基本可用；
+--
+6、v2.0.3-beta(2019-07-08)
+(1)、不兼容(Incompatible)
+移除 request->json() 方法(c9e8f04) 替代方法 getParserdBody()；
+应用日志和控制台日志 levels 由数组配置改成，字符串配置，详细见文档；
+(2)、新增(Enhancement)
+新增接口依赖注入(6169f84)；
+新增 getFile 方法获取文件上传保存之后的信息(fe7e3a6)；
+新增 restart() 服务新增重启方法(2ffec37)；
+新增调用 1.x RPC 服务支持(30d73c3)；
+新增 AOP 类名匹配支持正则表达式(bc5e479)；
+新增 RPC Server /Http Server 中间件命名空间 use 错误提示(b1cec04)；
+新增 验证器排除属性字段 unfields(b1bf44f)；
+新增 自动写入时间戳(dc58011)；
+新增 模型动作事件(dc58011)；
+新增 数据库迁移(26bb464)；
+新增 实体自动与 json 和数组互转(dc58011)；
+新增 模型批量更新方法batchUpdateByIds(dc58011)；
+(3)、修复(Fixed)
+修复 cookies 设置时的一些问题，增加一些 withCookie 相关方法(b05afbb01)；
+修复 在console使用协程方式运行命令时，没有捕获处理错误(8a5418bf)；
+修复 websocket server 重启命令没有先停止旧server问题(db2d935)；
+修复任务返回值为 null 问题(a69347c)；
+修复 RPC Server 只有类中间件无法使用问题()204bc7f；
+修复 RPC Server 返回值为 null 问题(4d091be)；
+修复 Logger 和 CLog 日志等级无法覆盖和无效问题(8eb8aba)；
+修复 模型里面的属性不支持自定义表达式(dc58011)；
+(4)、更新(Update)
+验证器优化，支持自定义验证规则(d959a4f)；
+重命名错误处理管理类 ErrorHanlders 为 ErrorManager (f3a8f04b)；
+console组件的异常处理改为由error组件提供的统一处理风格 (4f47204)；
+console组件允许设置禁用命令组(c5a0269)；
+在默认的错误处理中，允许设置错误捕获级别。默认级别是 E_ALL | E_STRICT (afff9029)；
+优化 启动ws server时同时启用了http处理功能，信息面板添加提示(83a81170)；
+优化 启动ws server 并同时添加rpc server启动，信息面板没有显示 rpc server信息(3d1d0d848)；
+(5)、扩展(Extra)
+文档添加支持通过google进行搜索；
+新增 apollo 组件；
+新增 consul 组件；
+新增 breaker 组件；
+新增 limter 组件；
+新增 tcp-server 组件；
+--
+7、v2.0.2-beta(2019-06-21)
+(1)、新增(Enhancement)
+新增 $request->parsedQuery() 方法 (ab45089)；
+新增 Bean 属性注入基础数据类型(string/int/bool/float/array)，自动根据注释类型转换。(e3d4085)；
+新增 db(), 使 Model/Query/DB 支持切库(f3b12c9)；
+新增 DbSelectorInterface 用于根据业务自动切库(b36ca03)；
+新增 Http server 增加Cookies响应支持 (1a024bf)；
+新增 devtool 组件的实体生成(14b4d39c)；
+新增 允许注册 swoole 的 pipeMessage, packet 事件[afec0e3f]；
+新增 添加更多启动时的相关事件[8aaa38c4]；
+新增 validate() 不依赖注解验证方式(cc35560)；
+新增 RPC 调用返回错误 RpcResponseException 异常(baa482f)；
+新增 允许注册 swoole 的 pipeMessage, packet 事件(afec0e3f)；
+新增 添加更多启动时的相关事件(8aaa38c4)；
+(2)、修复(Fixed)
+修复 paginate 无法指定查询字段(308d330)；
+修复 实体 join 操作，显示不出关联表数据 (446a3a2)；
+修复 实体属性名attributes等与系统定义属性冲突问题 (1a9d25b)；
+修复 AOP 切面重复执行问题 (54e00ac)；
+修复 Http 服务全局异常 contentType 失效问题(e704116)；
+修复 Http server在启用https 时，type 检查无法通过 (3e9b431)；
+修复 Http server通过data响应html时可能出现错误(e5513df)；
+修复 控制器 table 数据显示 (4d27718)；
+修复 devtool 生成的 phpstorm meta文件key重复(1838552)；
+修复 ws-server 参数路由匹配失败(4d3392e6)；
+修复 Http 服务 content-type 多值解析错误问题(1657979)；
+修复 Co::multi 抛出异常调用错误问题(d0ff0f7)；
+修复 body 字符串无解析调用错误问题(32abf60)；
+修复 通过 setter操作实体 toArray失效问题(9c0f9505)；
+现在停止server(包含Ctrl+C)时总是会删除pid文件，修复没有删除pid文件导致docker重启失败问题(6a96b2c)；
+修复 通过 @Inject 注入Redis连接池没有释放以及连接池全部空闲判断问题(feac3700)；
+修复 数据库开启事物多连接池操作错误(3f80474)；
+修复 init() 方法中使用 config() 函数问题(fe9b92b)；
+修复 getParsedQuery() 方法初始化问题(8e05836)；
+修复 一些bean会出现重复初始化(例如 config)问题 (f8ef5a9a)；
+修复 Autoloader 文件与其它composer包文件冲突问题 (ba19af363)；
+(3)、更新(Update)
+修改模型方法insert,insertGetId,updateOrInsert只会插入定义了@Column字段(9c0f9505)；
+启动swoft时加入冲突扩展相关的运行环境检查(7fa7188f)；
+调整 count,sum,avg,max,min 返回值类型(c9b5e17a)；
+Http server 路由匹配顺序优化(d8fb588)；
+完善 RPC Client 调用错误信息提示(a1e56eb)；
+调整 Redis zAdd 成员和分数的位置⚠️不向下兼容(1a3275b3)；
+调整 如果没有添加验证注解，会跳过验证解析相关流程(582c806cc)；
+去除swoole中已经废弃的 buffer full/empty 事件相关代码 (873a97bed)；
+优化 Http server 验证器流程(0e73a8c)；
+(4)、扩展(Extra)
+swoft/view 添加通过 @View 渲染视图支持；
+--
+8、v2.0.1-beta (2019-05-29)
+(1)、新增(Enhancement)
+新增验证器不存在错误提示(5ba8682)；
+新增 AOP 代理类名称标识 _PROXY_(5ba8682)；
+新增实体字段值类型转错误异常提示(ab3cfea)；
+新增 BeanFactory::getBeans() 根据类名查询使用实例(999c10f)；
+新增 Model getAttributeValue 获取字段值方法(642d791e)；
+新增 Get 方式参数验证(6452a37)；
+新增 Redis 通过 Inject 方式注入使用(fc0a88e)；
+新增 RRC 服务全局异常处理(1653b24)；
+(2)、修复(Fixed)
+修复 CLog 日志调用栈错误(868102f)；
+修复 Co::multi 调用失败错误数据格式(5ba8682)；
+修复 Function.php 重复加载(b063dd1)；
+修复 Logger 日志调用栈错误(ab3cfea)；
+修复 worker 进程退出未释放(close)数据库、缓存、RPC 连接池(5b1baa5)；
+修复 开发者自定义 content-type 失效问题(22cf706)；
+修复 request/session 级别销毁失效问题(e0d1493)；
+修复 bean 名称包含 . 点号失效问题(dc37c92)；
+修复连接池 maxIdleTime 参数无效问题(0e05591)；
+修复 文件上传 (10bc7fa)；
+修复 默认输出编码为UTF8 (755c8cf)；
+优化 Redis 配置类型转换(533b592)；
+打包为phar运行时路径错误(533b592)；
+(3)、Swoft-cli
+修复一些问题 swoft-cli；
+发布新版本时自动通过travis部署phar到GitHub release (d1503b2)；
+(4)、Devtool
+新 bean 方法代码智能提示(bean()`/BeanFactory::getBean()/Swoft::getBean()`)(b63fe07)；
+--
+9、v2.0.0-beta (2019-05-21)
+Swoft 2 重构归来，基于 Swoole hook 方式，底层完全重构，相比之前更佳简单、稳定、易上手。
+(1)、功能特性
+内置高性能网络服务器(Http/Websocket)；
+灵活的组件化；
+灵活的注解功能；
+多样化命令终端(Console)；
+强大的切面编程（AOP）；
+完善的容器管理、依赖注入 (DI)；
+灵活的事件机制；
+基于 PSR-7 的 HTTP 消息实现；
+基于 PSR-14 的事件管理器；
+基于 PSR-15 的中间件；
+可扩展的高性能 RPC；
+国际化(i18n)支持；
+简单高效的参数验证器；
+高性能连接池(Mysql/Redis/RPC)，自带断线重连；
+数据库高度兼容 laravel；
+缓存 Redis 高度兼容 Laravel；
+高效任务处理；
+灵活的异常处理；
+强大的日志系统；
+--
+--
+二、贡献规范
+Swoft 开源框架，非商业项目，由开源组织开发与维护，这意味着任何人都可以为其开发和进步贡献力量。参与 Swoft 有多种方式：代码贡献、文档贡献、官网维护、社区维护。
+--
+1、代码贡献
+Fork 组件代码库 swoft-component ( https://github.com/swoft-cloud/swoft-component )；
+发送 Pull Request 修改请求；
+等待 Swoft 开发组审核和合并；
+所有官方维护的组件均由swoft-component ( https://github.com/swoft-cloud/swoft-component )项目统一合并后分发到各个组件。
+--
+2、参与 swoft 的开发是否很难
+//// 通过对比 swoft 和传统框架, 来回答这个问题
+(1)、框架定位
+传统框架: 适合开发「巨石应用」, 所有功能都包含在同一份代码库中, 适合初创团队快速实现原型；
+swoft: 致力于实现 PHP 下的微服务, 功能都由「组件」提供, 可以按照实际需求按需加载组装；
+(2)、开发难度
+///1/ 传统框架
+熟悉经典的 lnmp 体系, 只用考虑 PHP 语法；
+通常需要完整熟悉整个框架, 才可能参与开发, 老旧的框架提 PR 可能很久才会处理；
+///2/ swoft
+熟悉 swoole 以及网络编程的基础知识, 就能轻松用 PHP 写出并发能力远超 fpm；
+开发组提供开发指南, 组件说明, 快速响应, 开发者可以选取一个简单的组件上手, 快速完成一个 PR；
+难? 我亦无他，唯手熟尔。
+--
+3、开发步骤
+(1)、使用 docker
+推荐使用 docker 解决开发环境的困扰, 开发组维护了 swoft/swoft 和 swoft/alphp 两个镜像, 简单示例。
+//
+//// 使用 docker-compose 进行服务编排
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --
 --
 --
