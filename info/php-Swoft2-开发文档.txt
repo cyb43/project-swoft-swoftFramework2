@@ -659,8 +659,89 @@ singleton bean
 ------------------------------
 singleton bean 是全局存在的, 所以 singleton 类型的 bean 值是不允许动态修改的。需要借助属性来存储 结果值 请使用 request/prototype 类型的 bean，详情参考 Bean 章节。
 (2)、非常驻内存框架常用代码
+<?php declare(strict_types=1);
+
+namespace App\Model\Logic;
+
+use App\Model\Data\UserData;
+use Swoft\Bean\Annotation\Mapping\Inject;
+
+class UserLogic
+{
+
+    /**
+     * @Inject()
+     *
+     * @var UserData
+     */
+    private $userData;
+
+    /**
+     * @var array 
+     */
+    private static $userCache = [];
+
+    /**
+     * @var string
+     */
+    public static $lastError = '';
 
 
+    /**
+     * Get user list
+     *
+     * @param array $userIds
+     *
+     * @return array
+     */
+    public function getUsers(array $userIds): array
+    {
+        $users = [];
+        foreach ($userIds as $k => $userId) {
+            if (isset(self::$userCache[$userId])) {
+                $users[] = self::$userCache[$userId];
+
+                unset($userIds[$k]);
+            }
+        }
+
+        if ( empty( $userIds ) ) {
+            return $users;
+        }
+
+        $list = $this->userData->getList($userIds);
+
+        if (empty($list)) {
+            self::$lastError = 'get user fail';
+
+            return [];
+        }
+
+        foreach ($list as $user) {
+            $userId = $user['uid'];
+
+            self::$userCache[$userId] = $user;
+
+            $users[] = self::$userCache[$userId];
+        }
+
+        return $users;
+    }
+}
+?>
+//
+//// 上面代码有以下两个问题
+使用 $userCache 静态属性来存储查询结果集，在同一进程下的请求数据是共享的，多个请求都写入当超过内存限额就会导致进程退出，也就是内存泄露。
+使用 $lastError 静态属性来，存储上一次错误信息，在同一进程下的请求数据是共享的可能会导致数据错乱，这也就是swoft 没有类似 get_last_sql() 这样的函数。
+//
+说明：由于基于 php-fpm 的多进程模式开发,每个请求的数据是独立的, 使用静态变量共享本次请求数据也是常用的方法。但是在常驻内存下开发，请不要使用 静态属性/全局变量/静态变量 来共享数据，因为swoft 是基于 协程模式，一个进程下面的协程的数据都是共享。并发修改静态属性的情况就会导致数据错乱，使用 static，global 关键字定义变量也是同理，请谨慎使用。
+--
+--
+第三卷、快速开始
+--
+一、框架安装
+https://www.swoft.org/documents/v2/quick-start/install/
+//
 
 
 
