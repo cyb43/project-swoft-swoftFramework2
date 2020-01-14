@@ -741,19 +741,263 @@ class UserLogic
 --
 一、框架安装
 https://www.swoft.org/documents/v2/quick-start/install/
+--
+1、系统要求
+Swoft 框架支持 Linux、macOS 以及 Windows 10 (通过 Windows 10 安装 WSL(Windows Subsystem for Linux，windows下的Linux子系统) 后可以使用大部分 Linux 功能，推荐安装 Ubuntu LTS 作为子系统)。
+--
+2、环境要求
+(1)、必要部分
+PHP，版本 >=7.1
+PHP 包管理器 Composer
+PCRE 库
+PHP 扩展 Swoole，版本 >=4.3
+额外扩展：PDO、Redis
+(2)、冲突部分
+下方列出部分已知与 Swoole 存在冲突的 PHP 扩展，请在使用 Swoft 时移除安装或禁用：Xdebug、Xhprof、Blackfire、Zend、trace、Uopz。
+--
+3、安装方式
+(1)、通过 Docker 安装
+docker run -p 18306:18306 --name swoft swoft/swoft
+(2)、通过 Docker Compose 安装
+git clone https://github.com/swoft-cloud/swoft
+cd swoft
+docker-compose up
+(3)、通过 Composer 安装
+composer create-project swoft/swoft Swoft
+提示：建议全局配置 Composer 国内镜像以加速下载、更新包，参考：阿里云 Composer 全量镜像( https://developer.aliyun.com/composer )。
+(4)、手动安装
+git clone https://github.com/swoft-cloud/swoft
+cd swoft
+composer install
+cp .env.example .env
+# 编辑 .env 文件，根据需要调整相关环境配置
+(5)、通过 Swoft CLI 创建
+关于 Swoft CLI 工具，请查阅 Swoft CLI 文档( https://www.swoft.org/documents/v2/dev-tools/swoft-cli )，该工具支持从不同模板项目中快速创建一个干净的 Swoft 应用。
+php swoftcli.phar create:app --type full Swoft-Full
+php swoftcli.phar create:app --type ws Swoft-WebSocket
+php swoftcli.phar create:app --type tcp Swoft-TCP
+--
+4、IDE 插件
+通过文本编辑器进行 Swoft 开发时，Swoft 的注解功能虽然便捷，但仍需要 use 注解相对应的命名空间，这显然不是一个高效的做法。我们推荐在使用集成开发环境 IDEA 或 PhpStorm 时，通过插件市场搜索并安装 PHP Annotations 插件以提供注解命名空间自动补全、注解属性代码提醒、注解类跳转等非常有助于提升开发效率的功能。
+--
+--
+二、目录结构
+https://www.swoft.org/documents/v2/quick-start/directory-struct/
+--
+1、简介
+//// 一个完整的 Swoft 应用包含
+Console 应用；
+HTTP 服务（类似传统框架）；
+WebSocket 服务；
+RPC 服务；
+TCP 服务；
+说明：app 下的类目录为了避免部分文件夹名称没有复数单词而导致命名不统一，所以所有文件夹名称 统一使用单数。
+--
+2、完整结构
+├── app/    ----- 应用代码目录
+│   ├── Annotation/        ----- 定义注解相关
+│   ├── Aspect/            ----- AOP 切面
+│   ├── Common/            ----- 一些具有独立功能的 class bean
+│   ├── Console/           ----- 命令行代码目录
+│   ├── Exception/         ----- 定义异常类目录
+│   │   └── Handler/           ----- 定义异常处理类目录
+│   ├── Http/              ----- HTTP 服务代码目录
+│   │   ├── Controller/
+│   │   └── Middleware/
+│   ├── Helper/            ----- 助手函数
+│   ├── Listener/          ----- 事件监听器目录
+│   ├── Model/             ----- 模型、逻辑等代码目录(这些层并不限定，根据需要使用)
+│   │   ├── Dao/
+│   │   ├── Data/
+│   │   ├── Logic/
+│   │   └── Entity/
+│   ├── Rpc/               ----- RPC 服务代码目录
+│   │   └── Service/
+│   │   └── Middleware/
+│   ├── WebSocket/         ----- WebSocket 服务代码目录
+│   │   ├── Chat/
+│   │   ├── Middleware/
+│   │   └── ChatModule.php
+│   ├── Tcp/               ----- TCP 服务代码目录
+│   │   └── Controller/        ----- TCP 服务处理控制器目录
+│   ├── Application.php    ----- 应用类文件继承自swoft核心
+│   ├── AutoLoader.php     ----- 项目扫描等信息(应用本身也算是一个组件)
+│   └── bean.php
+├── bin/
+│   ├── bootstrap.php
+│   └── swoft              ----- Swoft 入口文件
+├── config/                ----- 应用配置目录
+│   ├── base.php               ----- 基础配置
+│   └── db.php                 ----- 数据库配置
+├── public/                ----- 公共目录
+├── resource/              ----- 应用资源目录
+│   ├── language/              ----- 语言资源目录  
+│   └── view/                  ----- 视图资源目录  
+├── runtime/               ----- 临时文件目录（日志、上传文件、文件缓存等）
+├── test/                  ----- 单元测试目录
+│   └── bootstrap.php
+├── composer.json
+├── phar.build.inc
+└── phpunit.xml.dist
+--
+--
+三、运行服务
+https://www.swoft.org/documents/v2/quick-start/run-server/
+--
+1、简述
+Swoft 拥有便捷的命令行工具和相应的服务管理命令，参阅 Swoft Devtool( https://www.swoft.org/documents/v2/dev-tools/swoft-devtool ) 了解更多。
+--
+2、HTTP 服务
+# 启动 HTTP 服务
+$ php ./bin/swoft http:start
+#
+# 以守护进程模式启动
+$ php ./bin/swoft http:start -d
+#
+# 重启 HTTP 服务
+$ php ./bin/swoft http:restart
+#
+# 重新加载 HTTP 服务
+$ php ./bin/swoft http:reload
+#
+# 停止 HTTP 服务
+$ php ./bin/swoft http:stop
+--
+3、WebSocket 服务
+# 启动 WS 服务
+$ php ./bin/swoft ws:start
+#
+# 以守护进程模式启动
+$ php ./bin/swoft ws:start -d
+#
+# 重启 WS 服务
+$ php ./bin/swoft ws:restart
+#
+# 重新加载 WS 服务
+$ php ./bin/swoft ws:reload
+#
+# 关闭 WS 服务
+$ php ./bin/swoft ws:stop
+--
+4、RPC 服务
+# 启动 RPC 服务
+$ php ./bin/swoft rpc:start
+#
+# 以守护进程模式启动
+$ php ./bin/swoft rpc:start -d
+#
+# 重启 RPC 服务
+$ php ./bin/swoft rpc:restart
+#
+# 重新加载 RPC 服务
+$ php ./bin/swoft rpc:reload
+#
+# 关闭 RPC 服务
+$ php ./bin/swoft rpc:stop
+--
+5、启动信息
+默认情况下，在任何服务启动时控制台会显示相应的启动信息。如果在 .env 文件中开启了调试 SWOFT_DEBUG=1 将会在控制台中显示更多详细的信息。
 //
+//// 如果需要关闭这些信息，只需要编辑 app/Application.php 文件
+public function getCLoggerConfig(): array
+{
+    $config = parent::getCLoggerConfig();
+
+    // False: 关闭控制台日志打印
+    $config['enable'] = true;
+
+    // 日志等级
+    $config['levels'] = 'error,warning';
+
+    return $config;
+}
+编辑后重启 Swoft 相关服务生效。
+--
+--
+第四卷 开发工具
+--
+一、PhpStorm
+https://www.swoft.org/documents/v2/dev-tools/phpstorm/
+--
+1、Annotations 插件
+通过文本编辑器的环境进行 Swoft 开发，在使用 Swoft 便捷的注解时，仍需要 use 注解相对应的命名空间， 这显然不是一个高效的做法。我们推荐在 PHPStorm 环境下，并安装 Jetbrain 自带的 PHP Annotations 插件，可提供注解命名空间自动补全，注解属性代码提醒，注解类跳转等非常有助于提升开发效率的功能。
+--
+--
+二、Swoft CLI
+https://www.swoft.org/documents/v2/dev-tools/swoft-cli/
+--
 
 
 
 
 
-
-
+ 
 
 
 
 
 ()、
+--
+--
+--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --
 --
 --
