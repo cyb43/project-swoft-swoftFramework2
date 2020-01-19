@@ -1765,10 +1765,60 @@ class A
 --
 --
 四、事件
-
-
-
-
+https://www.swoft.org/documents/v2/basic-components/event/
+//
+Swoft 2 对事件进行了更加清晰和严谨的规划，提供了基本的事件注册与触发管理。
+GitHub: https://github.com/swoft-cloud/swoft-event
+--
+1、安装
+默认情况下事件组件已包含在 Swoft 框架中，如需单独安装只需执行下方命令。
+composer require swoft/event
+--
+2、简介
+//// 在 Swoft 中，我们将事件分为三大类。
+Swoole Server 回调事件；
+Swoft Server 事件，基于 Swoole 回调处理，扩展了可用事件以方便自定义；
+应用级自定义事件管理；
+--
+3、事件分组
+除部分特殊事件外，在一个应用中，大多数事件存在关联性，此时我们可以对事件进行分组以方便识别和管理。建议根据实际情况在名称设计上对事件进行分组。
+//
+//// 示例
+swoft.server.*
+swoft.process.*
+swoft.pool.*
+//
+swoft.http.request.before
+swoft.http.request.after
+//
+swoft.db.query.start
+swoft.db.query.after
+//
+swoft.redis.start
+swoft.redis.after
+//
+swoft.ws.start
+swoft.ws.after
+//
+swoft.tcp.start
+swoft.tcp.after
+//
+swoft.udp.start
+swoft.udp.after
+--
+4、通配符
+//// 事件支持使用通配符 * 对一组相关事件进行监听，具体分为两种
+|1>、* 全局事件通配符。直接对 * 添加监听器 @Listener("*")，此时所有触发的事件都会被此监听器所监听。
+|2>、{prefix}.* 指定分组事件的监听。例如 @Listener("swoft.db.*")，此时所有以 swoft.db. 为前缀的事件（例如 swoft.db.query、swoft.db.connect）都会被此监听器所监听。
+在事件到达监听器前停止本次事件的传播 $event->stopPropagation(true) 时，后面的监听器将不会收到该事件。
+--
+5、如何使用
+(1)、监听器
+//// 事件监听器类通过注解 @Listener 指定，其拥有两个属性
+event：监听事件名称；
+priority：监听器的优先级，数字越大优先执行；
+注意：监听类必须实现接口 Swoft\Event\EventHandlerInterface。
+(2)、消费者
 
 
 
