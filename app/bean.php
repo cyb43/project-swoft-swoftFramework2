@@ -24,23 +24,33 @@ use Swoft\Server\SwooleEvent;
 use Swoft\Db\Database;
 use Swoft\Redis\RedisDb;
 
+
+/**
+ * ^2_3^
+ */
 return [
     'noticeHandler'      => [
         'logFile' => '@runtime/logs/notice-%d{Y-m-d-H}.log',
     ],
+
     'applicationHandler' => [
         'logFile' => '@runtime/logs/error-%d{Y-m-d}.log',
     ],
+
     'logger'            => [
         'flushRequest' => false,
         'enable'       => false,
         'json'         => false,
     ],
+
+
+    //// ^2_3^ http服务
     'httpServer'        => [
         'class'    => HttpServer::class,
         'port'     => 18306,
         'listener' => [
-            'rpc' => bean('rpcServer')
+            'rpc' => bean('rpcServer'),
+            //'ws' => bean('wsServer') //?为什么跟随http服务启动ws会报错？(2020-02-15)
         ],
         'process'  => [
 //            'monitor' => bean(MonitorProcess::class)
@@ -71,6 +81,9 @@ return [
             \Swoft\Http\Server\Middleware\ValidatorMiddleware::class
         ]
     ],
+
+
+    //// [示例]数据库配置
     'db'                => [
         'class'    => Database::class,
         'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
@@ -78,6 +91,7 @@ return [
         'password' => 'swoft123456',
         'charset' => 'utf8mb4',
     ],
+    //
     'db2'               => [
         'class'      => Database::class,
         'dsn'        => 'mysql:dbname=test2;host=127.0.0.1',
@@ -89,6 +103,7 @@ return [
         'class'    => Pool::class,
         'database' => bean('db2'),
     ],
+    //
     'db3'               => [
         'class'    => Database::class,
         'dsn'      => 'mysql:dbname=test2;host=127.0.0.1',
@@ -99,9 +114,12 @@ return [
         'class'    => Pool::class,
         'database' => bean('db3')
     ],
+    //
     'migrationManager'  => [
         'migrationPath' => '@database/Migration',
     ],
+
+    //// redis配置
     'redis'             => [
         'class'    => RedisDb::class,
         'host'     => '127.0.0.1',
@@ -145,7 +163,7 @@ return [
 //        'client' => bean('amqp'),
 //    ],
 
-    //// RPC Client 配置
+    //// [RPC服务] RPC Client 配置
     'user'              => [
         'class'   => ServiceClient::class,
         'host'    => '127.0.0.1',
@@ -163,9 +181,30 @@ return [
         'client' => bean('user'),
     ],
 
+    //// [RPC服务] RPC Client 配置
+    'rpcClient'              => [
+        'class'   => ServiceClient::class,
+        'host'    => '127.0.0.1',
+        'port'    => 18307,
+        'setting' => [
+            'timeout'         => 0.5,
+            'connect_timeout' => 1.0,
+            'write_timeout'   => 10.0,
+            'read_timeout'    => 0.5,
+        ],
+        'packet'  => bean('rpcClientPacket')
+    ],
+    'rpcClient.pool'         => [
+        'class'  => ServicePool::class,
+        'client' => bean('rpcClient'),
+    ],
+
+    //// ^2_3^ RPC服务
     'rpcServer'         => [
         'class' => ServiceServer::class,
     ],
+
+    //// ^2_3^ WS服务
     'wsServer'          => [
         'class'   => WebSocketServer::class,
         'port'    => 18308,
@@ -179,6 +218,7 @@ return [
         ],
         'debug'   => 1,
         // 'debug'   => env('SWOFT_DEBUG', 0),
+
         /* @see WebSocketServer::$setting */
         'setting' => [
             'log_file' => alias('@runtime/swoole.log'),
@@ -190,6 +230,7 @@ return [
             \App\WebSocket\Middleware\GlobalWsMiddleware::class
         ],
     ],
+
     /** @see \Swoft\Tcp\Server\TcpServer */
     'tcpServer'         => [
         'port'  => 18309,
@@ -207,6 +248,7 @@ return [
             \App\Tcp\Middleware\GlobalTcpMiddleware::class
         ],
     ],
+
     'cliRouter'         => [
         // 'disabledGroups' => ['demo', 'test'],
     ]
