@@ -174,7 +174,7 @@
     }
 
     .swoft-title {
-      margin-top: 23%;
+      /*margin-top: 23%;*/
       text-align: center;
       color: #18bc9c;
       opacity: 0.7;
@@ -262,7 +262,7 @@
   </nav>
   <div class="main">
     <h1 class="swoft-title">Swoft <span class="framework">Framework</span>
-      <small>2.x</small>
+      <small>2.0.8</small>
       <small>2workroom3工作室</small>
     </h1>
   </div>

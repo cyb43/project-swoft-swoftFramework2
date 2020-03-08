@@ -2885,10 +2885,34 @@ https://www.swoft.org/documents/v2/basic-components/public-function/
 --
 1、协程函数
 (1)、创建协程
-
-
-
-
+Swoft 框架中不能使用 Swoole 提供的 go 函数创建协程，否则会造成请求和上下文丢失最终导致一些不可预估的问题。Swoft 拥有两种方式创建协程。
+//
+///1/ 方式一
+ use Swoft\Co;
+ Co::create(function () {
+     // to do
+ });
+//
+///2/ 方式二，通过助手函数 sgo 创建
+sgo(function () {
+    // todo
+});
+sgo 函数使用与 Swoole 中的 go 函数完全一致，再次强调，框架中只能使用 sgo 函数创建协程。
+(2)、协程 ID
+// 获取当前协程 ID，-1 为非协程环境
+use Swoft\Co;
+$id = Co::id();
+(3)、顶级协程 ID
+// 获取顶级（最外层）协程 ID
+use Swoft\Co;
+$id = Co::tid();
+(4)、读文件
+读取成功返回字符串内容，读取失败返回 false，可使用 swoole_last_error 获取错误信息。`readFile` 方法没有文件大小限制，读取的内容会存放在内存中，因此读取大文件时会占用大量内存。
+// 使用示例
+use Swoft\Co;
+$fileName = 'file.txt'; //$filename: 带完整路径的文件名称;
+$data = Co::readFile($fileName);
+(5)、写文件
 
 
 
