@@ -2913,6 +2913,87 @@ use Swoft\Co;
 $fileName = 'file.txt'; //$filename: 带完整路径的文件名称;
 $data = Co::readFile($fileName);
 (5)、写文件
+// 写入成功返回 true，失败返回 false。
+use Swoft\Co;
+$fileName = 'file.txt';
+$data = Co::writeFile($fileName, 'Swoft Framework');
+$filename：带完整路径的文件的名称，须有可写权限，文件不存在时会自动创建，打开文件失败会直接返回 false。
+$data：写入内容，大小限制为 4M。
+$flags：写入选项，默认值为 FILE_USE_INCLUDE_PATH 常量。可选值参考：文件系统 - 预定义常量 - PHP Manual ( https://www.php.net/manual/zh/filesystem.constants.php )。
+(6)、并发
+框架底层通过协程通道，封装了一套混合 IO 并发操作的方法，一般用于没有依赖的多个流程。
+<?php
+
+use Co\Http\Client;
+use Swoft\Co;
+
+/**
+ * Class CoTest
+ *
+ * @since 2.0
+ */
+class CoTest
+{
+
+    public function testMulti()
+    {
+        $requests = [
+            'method' => [$this, 'requestMethod'], //对象方法；
+            'staticMethod' => self::requestMehtodByStatic(), //对象静态方法;
+            'closure' => function () { //闭包函数;
+                $cli = new Client('www.baidu.com', 80);
+                $cli->get('/');
+                $result = $cli->body;
+                $cli->close();
+
+                return $result;
+            }
+        ];
+
+        $response = Co::multi($requests);
+    }
+
+    public function requestMethod()
+    {
+        $cli = new Client('www.baidu.com', 80);
+        $cli->get('/');
+        $result = $cli->body;
+        $cli->close();
+
+        return $result;
+    }
+
+    public static function requestMehtodByStatic()
+    {
+        $cli = new Client('www.baidu.com', 80);
+        $cli->get('/');
+        $result = $cli->body;
+        $cli->close();
+
+        return $result;
+    }
+}
+?>
+//// 参数说明
+$requests：多个操作集合，requests 支持多种格式，对象方法、对象静态方法、闭包函数。
+$timeout：超时时间，默认永不超时。
+并发执行结果按照 requests 数组中 key 对应关系返回。如果某个 key 对应的值为 false，意味着该操作执行失败。requests 内每个操作可执行的业务不存在上限，根据实际业务而定。
+--
+2、数组函数
+数组函数需引入 Swoft\Stdlib\Helper\Arr 或 Swoft\Stdlib\Helper\ArrayHelper，详情参阅：ArrayHelper.php 文件( https://github.com/swoft-cloud/swoft-stdlib/blob/master/src/Helper/ArrayHelper.php )。
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
