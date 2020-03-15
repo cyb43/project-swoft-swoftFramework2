@@ -5981,6 +5981,358 @@ function value($value): mixed
 七、错误处理
 https://swoft.org/documents/v2/basic-components/error-dispose/
 --
+GitHub: https://github.com/swoft-cloud/swoft-error](https://github.com/swoft-cloud/swoft-error)
+--
+1、简介
+Swoft 拥有完善的异常错误处理机制，与 FPM 模式有所不同。Swoft 根据不同的场景类型将错误进行了区分。因此你无需关心在不同场景下的错误如何处理，只需实现对应场景的错误处理逻辑即可。Swoft 会自动调度对应的错误处理器。
+--
+2、安装
+默认情况下错误处理组件已包含在 Swoft 框架中，如需单独安装只需执行下方命令：
+composer require swoft/error
+--
+3、场景
+场景类型的划分主要根据 Swoole 的回调事件范围来划分。
+比如，DB 中抛出一个 DbException，在 HTTP 服务运行场景里你需对异常处理后返回一个 Reponse 对象即可。而在 CLI 等环境里，你可以只对异常做出相应处理，无需返回任何结果。
+为何要进行划分？在不同的场景里，即使是同一个地方抛出的异常错误，处理方式也可能是不同的。
+--
+4、场景类型
+Swoft 在 Swoft\Error\ErrorType 中定义了场景类型，参考：ErrorType.php 文件( https://github.com/swoft-cloud/swoft-error/blob/master/src/ErrorType.php )。
+<?php declare(strict_types=1);
+
+namespace Swoft\Error;
+
+/**
+ * Class ErrorType
+ *
+ * @since 2.0
+ */
+final class ErrorType
+{
+    // Console application
+    public const CLI  = 2;
+
+    public const RPC  = 3;
+    public const UDP  = 4;
+    public const SOCK = 7;
+    public const TASK = 8;
+
+    public const WORKER = 9;
+
+    // HTTP server
+    public const HTTP = 16;
+
+    // WebSocket server
+    public const WS_HS  = 21;
+    public const WS_OPN = 22;
+    public const WS_MSG = 23;
+    public const WS_CLS = 24;
+
+    // Tcp server
+    public const TCP_CNT = 31;
+    public const TCP_RCV = 32;
+    public const TCP_CLS = 33;
+
+    public const SYS = 85;
+
+    // Default error type
+    public const DEF     = 90;
+    public const DEFAULT = 90;
+}
+?>
+现支持的场景：控制台应用、HTTP 服务应用、RPC 服务应用、TCP 服务应用、WebSocket 服务应用。
+--
+5、异常处理器
+(1)、注解
+我们通过 @ExceptionHandler 将类指定为异常处理器。相关属性：exceptions：定义需进行处理的异常类，需提供完整类名或在顶部 use。
+(2)、匹配逻辑
+在同一个场景里，可以定义多个处理器来处理不同的异常：异常发生时，首先会使用异常类完整匹配进行处理器查找，匹配成功则由处理器处理；完整匹配失败，检查异常类是否为已注册异常类的子类，如果是则选择第一个匹配的处理器进行处理；仍然匹配失败，交由系统默认处理。
+--
+6、HTTP Request 异常
+定义异常处理器类时需继承 Swoft\Http\Server\Exception\Handler\AbstractHttpErrorHandler。处理异常后必须返回 Swoft\Http\Message\Response 对象作为 HTTP 客户端响应。
+(1)、使用示例
+参考 swoft/swoft 项目内的 HttpExceptionHandler.php 文件( https://github.com/swoft-cloud/swoft/blob/master/app/Exception/Handler/HttpExceptionHandler.php )。
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+
+namespace App\Exception\Handler;
+
+use Swoft\Error\Annotation\Mapping\ExceptionHandler;
+use Swoft\Http\Message\Response;
+use Swoft\Http\Server\Exception\Handler\AbstractHttpErrorHandler;
+use Swoft\Log\Helper\CLog;
+use Swoft\Log\Helper\Log;
+use Throwable;
+use function get_class;
+use function sprintf;
+use const APP_DEBUG;
+
+/**
+ * Class HttpExceptionHandler
+ *
+ * @ExceptionHandler(\Throwable::class)
+ */
+class HttpExceptionHandler extends AbstractHttpErrorHandler
+{
+    /**
+     * @param Throwable $e
+     * @param Response  $response
+     *
+     * @return Response
+     */
+    public function handle(Throwable $e, Response $response): Response
+    {
+        // Log error message
+        Log::error($e->getMessage());
+        CLog::error('%s. (At %s line %d)', $e->getMessage(), $e->getFile(), $e->getLine());
+
+        // Debug is false
+        if (!APP_DEBUG) {
+            return $response->withStatus(500)->withContent($e->getMessage());
+        }
+
+        $data = [
+            'code'  => $e->getCode(),
+            'error' => sprintf('(%s) %s', get_class($e), $e->getMessage()),
+            'file'  => sprintf('At %s line %d', $e->getFile(), $e->getLine()),
+            'trace' => $e->getTraceAsString(),
+        ];
+
+        // Debug is true
+        return $response->withData($data);
+    }
+}
+?>
+--
+7、RPC 异常
+定义异常处理器类时需继承 Swoft\Rpc\Server\Exception\Handler\AbstractRpcServerErrorHandler。
+处理异常后必须返回 Swoft\Rpc\Server\Response 对象作为 RPC 客户端响应。
+(1)、使用示例
+参考 swoft/swoft 项目内的 RpcExceptionHandler.php 文件( https://github.com/swoft-cloud/swoft/blob/master/app/Exception/Handler/RpcExceptionHandler.php )。
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+
+namespace App\Exception\Handler;
+
+use Swoft\Error\Annotation\Mapping\ExceptionHandler;
+use Swoft\Log\Debug;
+use Swoft\Rpc\Error;
+use Swoft\Rpc\Server\Exception\Handler\RpcErrorHandler;
+use Swoft\Rpc\Server\Response;
+use Throwable;
+
+/**
+ * Class RpcExceptionHandler
+ *
+ * @since 2.0
+ *
+ * @ExceptionHandler(\Throwable::class)
+ */
+class RpcExceptionHandler extends RpcErrorHandler
+{
+    /**
+     * @param Throwable $e
+     * @param Response  $response
+     *
+     * @return Response
+     */
+    public function handle(Throwable $e, Response $response): Response
+    {
+        // Debug is false
+        if (!APP_DEBUG) {
+            // just show error message
+            $error = Error::new($e->getCode(), $e->getMessage(), null);
+        } else {
+            $message = sprintf(' %s At %s line %d', $e->getMessage(), $e->getFile(), $e->getLine());
+            $error   = Error::new($e->getCode(), $message, null);
+        }
+
+        Debug::log('Rpc server error(%s)', $e->getMessage());
+
+        $response->setError($error);
+
+        // Debug is true
+        return $response;
+    }
+}
+?>
+--
+8、WebSocket 异常
+WebSocket 异常处理分为握手（Handshake）及消息（Message），分别需继承 Swoft\WebSocket\Server\Exception\Handler\AbstractHandshakeErrorHandler 和 Swoft\WebSocket\Server\Exception\Handler\AbstractMessageErrorHandle。
+(1)、使用示例
+参考 swoft/swoft 项目内的 WsHandshakeExceptionHandler.php ( https://github.com/swoft-cloud/swoft/blob/master/app/Exception/Handler/WsHandshakeExceptionHandler.php ) 及 WsMessageExceptionHandler.php 文件( https://github.com/swoft-cloud/swoft/blob/master/app/Exception/Handler/WsMessageExceptionHandler.php )。
+//
+//// WsHandshakeExceptionHandler.php
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+
+namespace App\Exception\Handler;
+
+use Swoft\Error\Annotation\Mapping\ExceptionHandler;
+use Swoft\Http\Message\Response;
+use Swoft\WebSocket\Server\Exception\Handler\AbstractHandshakeErrorHandler;
+use Throwable;
+use function get_class;
+use function sprintf;
+use const APP_DEBUG;
+
+/**
+ * Class HttpExceptionHandler
+ *
+ * @ExceptionHandler(\Throwable::class)
+ */
+class WsHandshakeExceptionHandler extends AbstractHandshakeErrorHandler
+{
+    /**
+     * @param Throwable $e
+     * @param Response  $response
+     *
+     * @return Response
+     */
+    public function handle(Throwable $e, Response $response): Response
+    {
+        // Debug is false
+        if (!APP_DEBUG) {
+            return $response->withStatus(500)->withContent(sprintf(
+                '%s At %s line %d',
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            ));
+        }
+
+        $data = [
+            'code'  => $e->getCode(),
+            'error' => sprintf('(%s) %s', get_class($e), $e->getMessage()),
+            'file'  => sprintf('At %s line %d', $e->getFile(), $e->getLine()),
+            'trace' => $e->getTraceAsString(),
+        ];
+
+        // Debug is true
+        return $response->withData($data);
+    }
+}
+?>
+//
+//// WsMessageExceptionHandler.php 
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+
+namespace App\Exception\Handler;
+
+use Swoft\Error\Annotation\Mapping\ExceptionHandler;
+use Swoft\Log\Helper\Log;
+use Swoft\WebSocket\Server\Exception\Handler\AbstractMessageErrorHandler;
+use Swoole\WebSocket\Frame;
+use Throwable;
+use function server;
+use const APP_DEBUG;
+
+/**
+ * Class WsMessageExceptionHandler
+ *
+ * @since 2.0
+ *
+ * @ExceptionHandler(\Throwable::class)
+ */
+class WsMessageExceptionHandler extends AbstractMessageErrorHandler
+{
+    /**
+     * @param Throwable $e
+     * @param Frame     $frame
+     */
+    public function handle(Throwable $e, Frame $frame): void
+    {
+        $message = sprintf('%s At %s line %d', $e->getMessage(), $e->getFile(), $e->getLine());
+
+        Log::error('Ws server error(%s)', $message);
+
+        // Debug is false
+        if (!APP_DEBUG) {
+            server()->push($frame->fd, $e->getMessage());
+            return;
+        }
+
+        server()->push($frame->fd, $message);
+    }
+}
+?>
+--
+9、使用说明
+//// 示例代码
+class BusinessLogic 
+{
+    public function doSomething()
+    {
+        throw new BusinessException("Error Processing Request", 500);
+    }
+}
+抛出异常时：在 HTTP Request 场景下，将由 HttpExceptionHandler 处理；在 RPC Server 场景下，将由 RpcExceptionHandler 处理。
+上方处理器通过查找父类得到。我们也可以指定针对 BusinessException 异常的处理器，然后使用注解 @ExceptionHandler(BusinessException::class)。
+通过示例我们可以看到，即使在同一地方抛出的异常，只要定义了不同场景的异常处理器就可以分别针对不同场景的请求（如上面的 HTTP 和 RPC）而作出不同的响应，无需进行额外的检查与判断。
+--
+10、参与贡献
+欢迎参与贡献，您可以：Fork 我们的组件仓库，swoft/component；修改代码然后发送 PR；阅读 提交代码 的注意事项。
+--
+--
+第六卷 核心组件
+--
+一、命令行
+https://swoft.org/documents/v2/core-components/cli/
+swoft 提供了功能强大的命令行应用处理功能，swoft 的 http server、websocket server 等都是通过命令行启动和管理的。
+--
+1、安装
+(1)、Composer 安装
+composer require swoft/console
+(2)、Git 仓库
+Github https://github.com/swoft-cloud/swoft-console
+--
+2、参与贡献
+欢迎参与贡献，您可以：fork 我们的开发仓库 swoft/component( https://github.com/swoft-cloud/swoft-component )；修改代码然后发起 PR；阅读 提交代码( https://swoft.org/documents/v2/contribute/sub-codes/ ) 的注意事项。
+--
+3、功能特性
+命令行的解析运行是基于注解 @Command @CommandMapping 自动收集注册；
+支持给命令、命令组设置别名，一个命令可以有多个别名；
+功能全面的命令行的选项参数解析(命名参数，短选项，长选项 …)，命令行下 input, output 管理、使用；
+命令方法注释自动解析为帮助信息（支持 @CommandOption @CommandArgument @example 等注解）；
+支持输出多种颜色风格的消息文本(info, comment, success, warning, danger, error 等)；
+常用的特殊格式信息显示(section, panel, padding, helpPanel, table, title, list, multiList)；
+丰富的动态信息显示(pending/loading, pointing, spinner, counterTxt, dynamicText, progressTxt, progressBar)；
+常用的用户信息交互支持(select, multiSelect, confirm, ask/question, askPassword/askHiddenInput)；
+颜色输出是 windows linux mac 兼容的，不支持颜色的环境会自动去除相关CODE；
+支持 协程 和 非协程（传统同步阻塞）两种方式运行命令；
+内置 Phar 打包工具类，可以方便的将应用打包成 phar 文件，方便作为工具分发和使用；
+快速的为当前应用生成 bash/zsh 环境下的自动补全脚本(TODO)。
+swoft/console 基于 inhere/php-console( https://github.com/inhere/php-console ) 改进，并参考了 symfony/console( https://github.com/symfony/console ) 部分特性
+--
+4、定义命令
 
 
 
@@ -5994,7 +6346,12 @@ https://swoft.org/documents/v2/basic-components/error-dispose/
 
 
 
-第六卷
+
+
+
+
+
+
 ()、
 https://www.teamviewer.cn/cn/
 # chuyuan
