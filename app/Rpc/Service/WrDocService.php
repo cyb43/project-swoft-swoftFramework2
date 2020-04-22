@@ -8,7 +8,9 @@
 
 namespace App\Rpc\Service;
 
+use App\Model\Logic\WrDocLogin;
 use App\Rpc\Lib\WrDocInterface;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Rpc\Server\Annotation\Mapping\Service;
 
 
@@ -26,13 +28,23 @@ class WrDocService implements WrDocInterface
 {
 
     /**
+     * @Inject()
+     * @var WrDocLogin
+     * @author ^2_3^王尔贝
+     */
+    private $wrDocLogin;
+
+    /**
      * 信息
      * @return string
      * @author ^2_3^王尔贝
      */
     public function info(): string
     {
-        return 'WrDocService(开发文档示例)';
+        //return 'WrDocService(开发文档示例)';
+
+        return $this->wrDocLogin->info();
+
     }
 
 }

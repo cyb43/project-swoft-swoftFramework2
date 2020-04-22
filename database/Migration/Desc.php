@@ -18,6 +18,7 @@ use Swoft\Devtool\Annotation\Mapping\Migration;
 use Swoft\Devtool\Migration\Migration as BaseMigration;
 
 /**
+ * Desc表迁移^2_3^
  * Class Desc
  *
  * @since 2.0

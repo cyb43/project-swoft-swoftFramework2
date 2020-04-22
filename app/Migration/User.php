@@ -14,11 +14,13 @@ use Swoft\Devtool\Annotation\Mapping\Migration;
 use Swoft\Devtool\Migration\Migration as BaseMigration;
 
 /**
+ * user表迁移^2_3^
  * Class AddMsg20190630164222
  *
  * @since 2.0
  *
  * @Migration(20190630164222)
+ *
  */
 class User extends BaseMigration
 {

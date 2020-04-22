@@ -52,9 +52,12 @@ return [
             'rpc' => bean('rpcServer'),
             //'ws' => bean('wsServer') //?为什么跟随http服务启动ws会报错？(2020-02-15)
         ],
+        //// 进程
         'process'  => [
 //            'monitor' => bean(MonitorProcess::class)
-//            'crontab' => bean(CrontabProcess::class)
+
+            //// 定时任务
+            //'crontab' => bean(CrontabProcess::class)
         ],
         'on'       => [
 //            SwooleEvent::TASK   => bean(SyncTaskListener::class),  // Enable sync task
@@ -68,30 +71,55 @@ return [
             'worker_num'            => 6
         ]
     ],
+    // 中间件配置
     'httpDispatcher'    => [
         // Add global http middleware
         'middlewares'      => [
             \App\Http\Middleware\FavIconMiddleware::class,
             \Swoft\Http\Session\SessionMiddleware::class,
-            // \Swoft\Whoops\WhoopsMiddleware::class,
+            // \Swoft\Whoops\WhoopsMiddleware::class, //异常错误信息处理中间件;
             // Allow use @View tag
             \Swoft\View\Middleware\ViewMiddleware::class,
         ],
         'afterMiddlewares' => [
+            //// 验证器中间件
             \Swoft\Http\Server\Middleware\ValidatorMiddleware::class
         ]
     ],
 
 
-    //// [示例]数据库配置
+    ////// [示例]数据库配置
+    //
+    //// db配置，使用默认db.pool连接池；
     'db'                => [
         'class'    => Database::class,
-        'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
+
+        //// 容器宿主mysql(MacBookPro)
+        // (1)、容器宿主地址查询：通过ifconfig命令查看mac网络设置获取192.168.0.102；
+        // (2)、地址绑定注释：注释mysql配置文件中 bind-address = 127.0.0.1，允许其他地址访问；
+        // (3)、数据库授权：数据库运行 "mysql> ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '123456';"，允许root从其他地址登录；
+        // (4)、数据库创建：CREATE DATABASE `wr_swoft2` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+        // (5)、数据迁移：php bin/swoft migrate:up；
+//        'dsn'      => 'mysql:dbname=wr_swoft2;host=192.168.0.102:3306',
+//        'username' => 'root',
+//        'password' => '123456',
+
+        //// mysql容器
+        // docker inspect mysql-srv 获取 172.18.0.2；
+        'dsn'      => 'mysql:dbname=wr_swoft2;host=172.18.0.2:3306',
         'username' => 'root',
-        'password' => 'swoft123456',
+        'password' => '123456',
+
+
+        //// 腾讯云_mysql
+//        'dsn'      => 'mysql:dbname=wr_swoft2;host=gz-cdb-5opdrysn.sql.tencentcdb.com:60312',
+//        'username' => 'root',
+//        'password' => 'mysql_1357924680_@',
+
         'charset' => 'utf8mb4',
     ],
     //
+    //// db2配置
     'db2'               => [
         'class'      => Database::class,
         'dsn'        => 'mysql:dbname=test2;host=127.0.0.1',
@@ -104,9 +132,10 @@ return [
         'database' => bean('db2'),
     ],
     //
+    //// db3配置
     'db3'               => [
         'class'    => Database::class,
-        'dsn'      => 'mysql:dbname=test2;host=127.0.0.1',
+        'dsn'      => 'mysql:dbname=test3;host=127.0.0.1',
         'username' => 'root',
         'password' => 'swoft123456'
     ],
@@ -115,6 +144,7 @@ return [
         'database' => bean('db3')
     ],
     //
+    //// 数据迁移
     'migrationManager'  => [
         'migrationPath' => '@database/Migration',
     ],

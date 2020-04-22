@@ -18,11 +18,13 @@ use Swoft\Devtool\Annotation\Mapping\Migration;
 use Swoft\Devtool\Migration\Migration as BaseMigration;
 
 /**
+ * Count表迁移^2_3^
  * Class Count
  *
  * @since 2.0
  *
  * @Migration(time=20190913232743)
+ *
  */
 class Count extends BaseMigration
 {
