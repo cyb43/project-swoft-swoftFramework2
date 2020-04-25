@@ -1,5 +1,5 @@
 ##
-## ^2_3^ 储存在/root/project-web下，不在项目中运行，跟项目目录同级；
+## ^2_3^ 储存在/root/project-web下，不在项目中运行，跟www同级；
 ##
 version: '3.4'
 services:
@@ -18,9 +18,9 @@ services:
       - "18406:18306"
     volumes:
       ## project-swoft-swoftFramework2项目目录挂载容器"/var/www/swoft"目录
-      - ./project-swoft-swoftFramework2/:/var/www/swoft
+      - ./www/project-swoft-swoftFramework2/:/var/www/swoft
       # - ./runtime/ng-conf:/etc/nginx
-      - ./runtime/logs:/var/log
+      - ./www/project-swoft-swoftFramework2/runtime/logs:/var/log
     stdin_open: true
     tty: true
     privileged: true
