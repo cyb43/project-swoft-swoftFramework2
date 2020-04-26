@@ -1,0 +1,17 @@
+version: "3.3"
+services:
+	lnmp:
+		image: chy11/lnmp-srv:1.0
+		container_name: lnmp-srv
+		environment:
+			TZ: Asia/Shanghai
+			# APP_ENV: dev
+		volumes:
+			- ./www:/home/wwwroot
+			- ./project-service/lnmp/conf/nginx/nginx.conf:/usr/local/nginx/conf/nginx.conf
+			- ./project-service/lnmp/conf/nginx/vhost:/usr/local/nginx/conf/vhost
+			- ./project-service/lnmp/conf/php/php.ini:/usr/local/php/etc/php.ini
+			- ./project-service/lnmp/log/nginx:/home/wwwlogs
+		ports:
+			- "80:80"
+		tty: true
