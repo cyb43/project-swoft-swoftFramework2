@@ -1,0 +1,14 @@
+version: '3.4'
+services:
+  mysql:
+    image: mysql
+    container_name: mysql-srv
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+    ## 宿主端口映射到容器3306端口
+    ports:
+      - "13406:3306"
+    ## 项目目录"./project-service/mysql"挂载到容器目录“/var/lib/mysql”，可通过"docker exec -i mysql-srv ls var/lib/mysql"查看
+    volumes:
+      - ./project-service/mysql:/var/lib/mysql
+    restart: always
