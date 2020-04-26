@@ -1,0 +1,11 @@
+version: '3.4'
+services:
+  redis:
+    container_name: redis-srv
+    image: redis:4-alpine
+    ## 宿主端口映射到容器端口
+    ports:
+      - "16479:6379"
+    sysctls:
+      net.core.somaxconn: 65535
+    restart: always
