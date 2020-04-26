@@ -53,8 +53,16 @@ class WrDocController
      * @var WrDocInterface
      * @author ^2_3^王尔贝
      */
-    private $wrDocService;
+    //private $wrDocService;
 
+    /**
+     * [rpc服务]开发文档示例
+     * @Reference(pool="swoft2-rpc-srv.pool")
+     *
+     * @var WrDocInterface
+     * @author ^2_3^王尔贝
+     */
+    private $wrDocService;
 
     /**
      * 信息

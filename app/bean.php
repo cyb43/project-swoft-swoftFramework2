@@ -229,6 +229,26 @@ return [
         'client' => bean('rpcClient'),
     ],
 
+    //// [RPC服务(swoft2-rpc-srv)] RPC Client 配置
+    'swoft2-rpc-srv'              => [
+        'class'   => ServiceClient::class,
+        //'host'    => '127.0.0.1',
+        'host'    => env('SWOFT2_RPC_SRV_HOST'),
+        'port'    => 18407,
+        'setting' => [
+            'timeout'         => 0.5,
+            'connect_timeout' => 1.0,
+            'write_timeout'   => 10.0,
+            'read_timeout'    => 0.5,
+        ],
+        'packet'  => bean('rpcClientPacket')
+    ],
+    'swoft2-rpc-srv.pool'         => [
+        'class'  => ServicePool::class,
+        'client' => bean('swoft2-rpc-srv'),
+    ],
+
+
     //// ^2_3^ RPC服务
     'rpcServer'         => [
         'class' => ServiceServer::class,
