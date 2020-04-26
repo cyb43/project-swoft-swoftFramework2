@@ -1,0 +1,29 @@
+##
+## ^2_3^ 储存在/root/project-web下，不在项目中运行，跟www同级；
+##
+version: '3.4'
+services:
+  swoft:
+    image: swoft/swoft
+    ## for local develop(本地开发设置)
+    ## commad命令覆盖默认的启动server命令。启动后，进入容器再手动启动server php bin/swoft http:start。
+    command: php -S 127.0.0.1:13300
+    container_name: swoft2-rpc-srv
+    environment:
+      #- APP_ENV=dev
+      - TIMEZONE=Asia/Shanghai
+    #restart: always
+    ## 宿主端口:容器端口
+    ports:
+      - "18407:18307"
+    volumes:
+      ## project-swoft-swoftFramework2项目目录挂载容器"/var/www/swoft"目录
+      - ./www/project-swoft-swoftFramework2/:/var/www/swoft
+      # - ./runtime/ng-conf:/etc/nginx
+      - ./www/project-swoft-swoftFramework2/runtime/logs-rpc:/var/log
+    stdin_open: true
+    tty: true
+    privileged: true
+    ## sowft 镜像的 entrypoint 命令（运行初始化命令）是 ENTRYPOINT ["php", "/var/www/swoft/bin/swoft", "start"]，即 swoft 服务会随着容器而启动(默认)。
+    ## 改为启动到 bash 模式
+    #entrypoint: ["sh"]
