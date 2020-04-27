@@ -73,7 +73,7 @@ class WrDocController
     public function info(): Response
     {
         $info = $this->wrDocService->info();
-        $info .= '^2_3^';
+        $info .= '(^2_3^)';
         return context()->getResponse()->withContent( $info );
     }
 
