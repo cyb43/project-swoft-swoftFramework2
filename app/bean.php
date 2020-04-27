@@ -106,7 +106,8 @@ return [
 
         //// mysql容器
         // docker inspect mysql-srv 获取 172.18.0.2；
-        'dsn'      => 'mysql:dbname=wr_swoft2;host=172.18.0.2:3306',
+        //'dsn'      => 'mysql:dbname=wr_swoft2;host=172.18.0.2:3306',
+        'dsn'      => 'mysql:dbname=wr_swoft2;host='.env('MYSQL_SRV_HOST').':'.env('MYSQL_SRV_POST'),
         'username' => 'root',
         'password' => '123456',
 
@@ -234,7 +235,7 @@ return [
         'class'   => ServiceClient::class,
         //'host'    => '127.0.0.1',
         'host'    => env('SWOFT2_RPC_SRV_HOST'),
-        'port'    => 18407,
+        'port'    => env('SWOFT2_RPC_SRV_PORT'),
         'setting' => [
             'timeout'         => 0.5,
             'connect_timeout' => 1.0,
