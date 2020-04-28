@@ -153,11 +153,11 @@ return [
     //// redis配置
     'redis'             => [
         'class'    => RedisDb::class,
-        'host'     => '127.0.0.1',
-        'port'     => 6379,
+        'host'     => env('REDIS_SRV_HOST'),
+        'port'     => env('REDIS_SRV_PORT'),
         'database' => 0,
         'option'   => [
-            'prefix' => 'swoft:'
+            'prefix' => 'swoft2:'
         ]
     ],
 

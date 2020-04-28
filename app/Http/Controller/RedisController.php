@@ -21,6 +21,7 @@ use function sgo;
 
 /**
  * Class RedisController
+ * ^2_3^ redis控制器
  *
  * @since 2.0
  * @Controller("redis")
@@ -28,6 +29,7 @@ use function sgo;
 class RedisController
 {
     /**
+     * redis连接池
      * @Inject()
      *
      * @var Pool
@@ -35,6 +37,7 @@ class RedisController
     private $redis;
 
     /**
+     * ^2_3^ poolSet()
      * @RequestMapping("poolSet")
      */
     public function poolSet(): array
@@ -56,6 +59,7 @@ class RedisController
     }
 
     /**
+     * ^2_3^ set()
      * @RequestMapping()
      */
     public function set(): array
@@ -75,6 +79,7 @@ class RedisController
     }
 
     /**
+     * ^2_3^ str()
      * @RequestMapping("str")
      */
     public function str(): array
@@ -100,6 +105,7 @@ class RedisController
     }
 
     /**
+     * ^2_3^ 错误方式
      * Only to use test. The wrong way to use it
      *
      * @RequestMapping("release")
@@ -119,6 +125,7 @@ class RedisController
     }
 
     /**
+     * ^2_3^ 错误方式
      * Only to use test. The wrong way to use it
      *
      * @RequestMapping("ep")
@@ -141,6 +148,7 @@ class RedisController
     }
 
     /**
+     * ^2_3^ 错误方式
      * Only to use test. The wrong way to use it
      *
      * @RequestMapping("et")
