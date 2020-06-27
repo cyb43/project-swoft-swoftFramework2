@@ -1,2 +1,168 @@
 2020-04-28
-1、swoft2 rabbitmq 扩展使用；
+1、^2_3^ swoft2 rabbitmq 扩展使用；
+--
+--
+0、部署安装
+//
+///1/ cat docker-compose_lnmp-srv.yml
+version: "3.3"
+services:
+  lnmp:
+    image: chy11/lnmp-srv:1.0
+    container_name: lnmp-srv
+    environment:
+      TZ: Asia/Shanghai
+      # APP_ENV: dev
+    volumes:
+      - ./www:/home/wwwroot
+      - ./project-service/lnmp/conf/nginx/nginx.conf:/usr/local/nginx/conf/nginx.conf
+      - ./project-service/lnmp/conf/nginx/vhost:/usr/local/nginx/conf/vhost
+      - ./project-service/lnmp/conf/php/php.ini:/usr/local/php/etc/php.ini
+      - ./project-service/lnmp/log/nginx:/home/wwwlogs
+    ports:
+      - "80:80"
+    tty: true
+//
+///2/ cat docker-compose_mysql-srv.yml
+version: '3.4'
+services:
+  mysql:
+    image: mysql
+    container_name: mysql-srv
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+    ## 宿主端口映射到容器3306端口
+    ports:
+      - "13406:3306"
+    ## 项目目录"./project-service/mysql"挂载到容器目录“/var/lib/mysql”，可通过"docker exec -i mysql-srv ls var/lib/mysql"查看
+    volumes:
+      - ./project-service/mysql:/var/lib/mysql
+//
+///3/ cat docker-compose_rabbitmq-srv.yml
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq-srv
+    environment:
+      - RABBITMQ_DEFAULT_USER=2workroom3 #用户名;
+      - RABBITMQ_DEFAULT_PASS=1357924680_ #用户密码;
+    restart: always
+    ports:
+      - "15672:15672" #15672为rabbitmq的web管理界面端口;
+      - "5672:5672" #rabbitmq的服务端口;
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+//
+///4/ cat docker-compose_redis-srv.yml
+version: '3.4'
+services:
+  redis:
+    container_name: redis-srv
+    image: redis:4-alpine
+    ## 宿主端口映射到容器端口
+    ports:
+      - "16479:6379"
+    sysctls:
+      net.core.somaxconn: 65535
+    restart: always
+//
+///5/ cat docker-compose_swoft2-http-srv.yml
+##
+## ^2_3^ 储存在/root/project-web下，不在项目中运行，跟www同级；
+##
+version: '3.4'
+services:
+  swoft:
+##
+    image: swoft/swoft
+    ## for local develop(本地开发设置)
+    ## commad命令覆盖默认的启动server命令。启动后，进入容器再手动启动server php bin/swoft http:start。
+    command: php -S 127.0.0.1:13300
+    container_name: swoft2-http-srv
+    environment:
+      - APP_ENV=dev
+      - TIMEZONE=Asia/Shanghai
+    #restart: always
+    ## 宿主端口:容器端口
+    ports:
+      - "18406:18306"
+    volumes:
+      ## project-swoft-swoftFramework2项目目录挂载容器"/var/www/swoft"目录
+      - project-swoft-swoftFramework2/:/var/www/swoft
+      # - ./runtime/ng-conf:/etc/nginx
+      - project-swoft-swoftFramework2/runtime/logs-http:/var/log
+    stdin_open: true
+    tty: true
+    privileged: true
+    ## sowft 镜像的 entrypoint 命令（运行初始化命令）是 ENTRYPOINT ["php", "/var/www/swoft/bin/swoft", "start"]，即 swoft 服务会随着容器而启动(默认)。
+    ## 改为启动到 bash 模式
+    #entrypoint: ["sh"]
+//
+/// 进入容器
+$ docker exec -it swoft2-http-srv /bin/bash
+/// 开始swoft2 http服务
+root@cbb74ea7d741:/var/www/swoft# php bin/swoft http:start -d
+//
+///6/ cat docker-compose_swoft2-rpc-srv.yml
+      ##
+      ## ^2_3^ 储存在/root/project-web下，不在项目中运行，跟www同级；
+      ##
+      version: '3.4'
+      services:
+        swoft-rpc:
+          image: swoft/swoft
+          ## for local develop(本地开发设置)
+          ## commad命令覆盖默认的启动server命令。启动后，进入容器再手动启动server php bin/swoft http:start。
+          command: php -S 127.0.0.1:13300
+          container_name: swoft2-rpc-srv
+          environment:
+            - APP_ENV=dev
+            - TIMEZONE=Asia/Shanghai
+          #restart: always
+          ## 宿主端口:容器端口
+          ports:
+            - "18407:18307"
+          volumes:
+            ## project-swoft-swoftFramework2项目目录挂载容器"/var/www/swoft"目录
+            - ./project-swoft-swoftFramework2/:/var/www/swoft
+            # - ./runtime/ng-conf:/etc/nginx
+            - ./project-swoft-swoftFramework2/runtime/logs-rpc:/var/log
+          stdin_open: true
+          tty: true
+          privileged: true
+          ## sowft 镜像的 entrypoint 命令（运行初始化命令）是 ENTRYPOINT ["php", "/var/www/swoft/bin/swoft", "start"]，即 swoft 服务会随着容器而启动(默认)。
+          ## 改为启动到 bash 模式
+          #entrypoint: ["sh"]
+//
+///7/ cat docker-compose_swoft2-ws-srv.yml
+      version: '3.4'
+      services:
+        swoft-ws:
+          image: swoft/swoft
+          ## for local develop(本地开发设置)
+          ## commad命令覆盖默认的启动server命令。启动后，进入容器再手动启动server php bin/swoft http:start。
+          command: php -S 127.0.0.1:13300
+          container_name: swoft2-ws-srv
+          environment:
+            - APP_ENV=dev
+            - TIMEZONE=Asia/Shanghai
+          #restart: always
+          ## 宿主端口:容器端口
+          ports:
+            - "18408:18308"
+          volumes:
+            ## 当前./www/project-swoft-swoftFramework2目录挂载容器"/var/www/swoft"目录
+            - ./project-swoft-swoftFramework2/:/var/www/swoft
+            # - ./runtime/ng-conf:/etc/nginx
+            - ./project-swoft-swoftFramework2/runtime/logs-ws:/var/log
+          stdin_open: true
+          tty: true
+          privileged: true
+          ## sowft 镜像的 entrypoint 命令（运行初始化命令）是 ENTRYPOINT ["php", "/var/www/swoft/bin/swoft", "start"]，即 swoft 服务会随着容器而启动(默认)。
+          ## 改为启动到 bash 模式
+          #entrypoint: ["sh"]
+//

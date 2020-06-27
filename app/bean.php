@@ -98,7 +98,7 @@ return [
         // (1)、容器宿主地址查询：通过ifconfig命令查看mac网络设置获取192.168.0.102；
         // (2)、地址绑定注释：注释mysql配置文件中 bind-address = 127.0.0.1，允许其他地址访问；
         // (3)、数据库授权：数据库运行 "mysql> ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '123456';"，允许root从其他地址登录；
-        // (4)、数据库创建：CREATE DATABASE `wr_swoft2` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+        // (4)、数据库创建：CREATE DATABASE `project-swoft-swoftFramework2` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
         // (5)、数据迁移：php bin/swoft migrate:up；
 //        'dsn'      => 'mysql:dbname=wr_swoft2;host=192.168.0.102:3306',
 //        'username' => 'root',
@@ -107,9 +107,9 @@ return [
         //// mysql容器
         // docker inspect mysql-srv 获取 172.18.0.2；
         //'dsn'      => 'mysql:dbname=wr_swoft2;host=172.18.0.2:3306',
-        'dsn'      => 'mysql:dbname=wr_swoft2;host='.env('MYSQL_SRV_HOST').':'.env('MYSQL_SRV_POST'),
-        'username' => 'root',
-        'password' => '123456',
+        'dsn'      => 'mysql:dbname=project-swoft-swoftFramework2;host='.env('MYSQL_SRV_HOST').':'.env('MYSQL_SRV_POST'),
+        'username' => env('MYSQL_SRV_USERNAME'),
+        'password' => env('MYSQL_SRV_PASSWORD'),
 
 
         //// 腾讯云_mysql

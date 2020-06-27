@@ -34,9 +34,8 @@ class WrDocLogin
     public function info(): string
     {
         $user = User::find(1);
-        var_dump( $user );
 
-        return 'WrDocService(开发文档示例)_Login';
+        return 'WrDocService(开发文档示例)_Login逻辑';
     }
 
 }
